@@ -1,5 +1,5 @@
 export class JsonHelpers {
-    static parse(content: string): unknown {
+    static parse(content: string): any {
         try {
             return JSON.parse(content);
         } catch {
@@ -7,7 +7,7 @@ export class JsonHelpers {
         }
     }
 
-    static parseArray<T = unknown>(content: string): T[] {
+    static parseArray<T = any>(content: string): T[] {
         try {
             const json = this.parse(content);
             return Array.isArray(json) ? json : [json];
@@ -16,7 +16,7 @@ export class JsonHelpers {
         }
     }
 
-    static stringify(json: unknown): string {
+    static stringify(json: any): string {
         try {
             return JSON.stringify(json);
         } catch {

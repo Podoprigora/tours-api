@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { JsendResponseMapper } from './lib';
 
+import { JsendResponseMapper } from './lib';
 import { AbstractRouter } from './lib/abstract';
 import { ToursRouter } from './tours';
 import { UsersRouter } from './users';
@@ -39,12 +39,13 @@ class App {
     private configureMiddlewares() {
         this._handler.use(express.json());
 
-        // Should be always the last
+        // Should always be placed last
         this._handler.use(this.errorHandler());
     }
 
     private configureRoutes() {
         this._routes = [new UsersRouter(this._handler), new ToursRouter(this._handler)];
+
         this._handler.get('/', (req, res) => {
             res.status(200).send('Server up and running!');
         });

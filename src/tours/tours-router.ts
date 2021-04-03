@@ -2,11 +2,12 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Application } from 'express';
 import debug from 'debug';
+import _has from 'lodash/has';
 
 import { DataHelpers, JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
 import { AbstractRouter } from '../lib/abstract';
 
-const debugToursRouter = debug('app:ToursRouter');
+const dlog = debug('app:ToursRouter');
 
 export class ToursRouter extends AbstractRouter {
     constructor(app: Application) {
@@ -36,7 +37,7 @@ export class ToursRouter extends AbstractRouter {
             try {
                 // Validation request params
                 if (DataHelpers.isEmptyObject(req.body)) {
-                    throw new ResponseError(404, 'Request params is empty!');
+                    throw new ResponseError(404, 'The request params should not be empty!');
                 }
 
                 // Get last id
@@ -45,15 +46,13 @@ export class ToursRouter extends AbstractRouter {
                 const toursContent = await fs.readFile(pathname, { encoding: 'utf-8' });
                 const tours = JsonHelpers.parseArray(toursContent);
 
-                lastId = tours.reduce((result: number, item: unknown): number => {
-                    const id = DataHelpers.hasProp(item, 'id')
-                        ? parseInt(String(item.id), 10)
-                        : result;
+                lastId = tours.reduce((result: number, item): number => {
+                    const id = _has(item, 'id') ? parseInt(String(item.id), 10) : result;
 
                     return Math.max(result, id);
                 }, lastId);
 
-                // Add a new record
+                // Save a new tour
                 const newTour = {
                     id: lastId + 1,
                     ...req.body
