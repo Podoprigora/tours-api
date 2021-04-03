@@ -2,10 +2,10 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Application } from 'express';
 import debug from 'debug';
-import _has from 'lodash/has';
 
 import { DataHelpers, JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
 import { AbstractRouter } from '../lib/abstract';
+import { hasIdSchema } from '../common/models';
 
 const dlog = debug('app:ToursRouter');
 
@@ -47,9 +47,11 @@ export class ToursRouter extends AbstractRouter {
                 const tours = JsonHelpers.parseArray(toursContent);
 
                 lastId = tours.reduce((result: number, item): number => {
-                    const id = _has(item, 'id') ? parseInt(String(item.id), 10) : result;
+                    if (hasIdSchema.isValidSync(item)) {
+                        return Math.max(result, item.id);
+                    }
 
-                    return Math.max(result, id);
+                    return result;
                 }, lastId);
 
                 // Save a new tour
