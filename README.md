@@ -1,0 +1,1 @@
+The purpose of this project is mastering node.js, express, mongodb and typescript by making a simple api for tours. 
