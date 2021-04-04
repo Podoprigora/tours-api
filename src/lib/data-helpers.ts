@@ -1,13 +1,13 @@
 export class DataHelpers {
-    static isObject(data: unknown): data is Record<string, unknown> {
-        return data ? data instanceof Object : false;
+    static isObject(obj: unknown): obj is Record<string, unknown> {
+        return Object.prototype.toString.call(obj) === '[object Object]';
     }
 
-    static isEmptyObject(data: unknown): boolean {
-        if (!this.isObject(data)) {
+    static isEmptyObject(obj: unknown): boolean {
+        if (!this.isObject(obj)) {
             return true;
         }
 
-        return Object.keys(data).length === 0;
+        return Object.keys(obj).length === 0;
     }
 }

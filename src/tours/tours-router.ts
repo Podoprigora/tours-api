@@ -5,7 +5,7 @@ import debug from 'debug';
 
 import { DataHelpers, JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
 import { AbstractRouter } from '../lib/abstract';
-import { hasIdSchema } from '../common/models';
+import { hasIdSchema, IHasId } from '../common/models';
 
 const dlog = debug('app:ToursRouter');
 
@@ -47,11 +47,7 @@ export class ToursRouter extends AbstractRouter {
                 const tours = JsonHelpers.parseArray(toursContent);
 
                 lastId = tours.reduce((result: number, item): number => {
-                    if (hasIdSchema.isValidSync(item)) {
-                        return Math.max(result, item.id);
-                    }
-
-                    return result;
+                    return hasIdSchema.isValidSync(item) ? Math.max(result, item.id) : result;
                 }, lastId);
 
                 // Save a new tour
