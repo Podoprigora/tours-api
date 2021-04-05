@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const tourByIdParamsSchema = yup.object({
+export const tourRequestByIdParamsSchema = yup.object({
     id: yup.string().trim().required(),
     test: yup
         .string()
@@ -14,7 +14,7 @@ export const tourByIdParamsSchema = yup.object({
         })
 });
 
-export type ITourByIdParams = yup.Asserts<typeof tourByIdParamsSchema>;
+export type ITourRequestByIdParams = yup.Asserts<typeof tourRequestByIdParamsSchema>;
 
 export const tourSchema = yup.object({
     id: yup.number().required(),
@@ -24,10 +24,10 @@ export const tourSchema = yup.object({
 });
 export type ITour = yup.Asserts<typeof tourSchema>;
 
-export const newTourRequestParamsSchema = yup.object({
+export const tourRequestBodySchema = yup.object({
     name: yup.string().required(),
     price: yup.number().required(),
     description: yup.string().required()
 });
 
-export type INewTourRequiestParams = yup.Asserts<typeof tourSchema>;
+export type ITourRequestBody = yup.Asserts<typeof tourRequestBodySchema>;

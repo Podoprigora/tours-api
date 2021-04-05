@@ -9,15 +9,13 @@ export class ToursRouter extends AbstractRouter {
     }
 
     configureRoutes() {
-        // Tours route handlers
-
         const toursRoute = this.app.route('/api/v1/tours');
-        toursRoute.get(ToursController.get);
-        toursRoute.post(ToursController.validatePostRequestParams, ToursController.post);
 
-        // TourById route handlers
+        toursRoute.get(ToursController.getAll);
+        toursRoute.post(ToursController.validateRequestBody, ToursController.post);
 
         const toursByIdRoute = this.app.route('/api/v1/tours/:id/:test?');
+
         toursByIdRoute.all(ToursController.validateRequestByIdParams);
         toursByIdRoute.get(ToursController.getById);
     }

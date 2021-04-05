@@ -3,18 +3,17 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
-import { ITour } from '../models';
 import { ToursValidators } from './tours-validators';
 
 export class ToursController {
-    static async get(req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
             const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
             const content = await fs.readFile(pathname, { encoding: 'utf-8' });
             const contentArray = JsonHelpers.parseArray(content);
-            const tours = await ToursValidators.validateTours(contentArray);
+            const tours = await ToursValidators.validateArray(contentArray);
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data!");
@@ -26,12 +25,11 @@ export class ToursController {
         }
     }
 
-    static async validatePostRequestParams(req: Request, res: Response, next: NextFunction) {
-        // Validation post request params
+    static async validateRequestBody(req: Request, res: Response, next: NextFunction) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
-            await ToursValidators.validateNewTourRequestParams(req.body);
+            await ToursValidators.validateRequestBody(req.body);
             next();
         } catch (e) {
             responseMapper.sendFailure(e);
@@ -46,7 +44,7 @@ export class ToursController {
             const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
             const toursContent = await fs.readFile(pathname, { encoding: 'utf-8' });
             const contentArray = JsonHelpers.parseArray(toursContent);
-            const tours = await ToursValidators.validateTours(contentArray);
+            const tours = await ToursValidators.validateArray(contentArray);
 
             if (!tours) {
                 throw new ResponseError(500, "Can't perform saving data!");
@@ -57,7 +55,7 @@ export class ToursController {
             }, 0);
 
             // Save a new tour
-            const newTour = await ToursValidators.validateTour({
+            const newTour = await ToursValidators.validateOne({
                 id: lastId + 1,
                 ...req.body
             });
@@ -89,7 +87,7 @@ export class ToursController {
             const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
             const content = await fs.readFile(pathname, { encoding: 'utf-8' });
             const contentArray = JsonHelpers.parseArray(content);
-            const tours = await ToursValidators.validateTours(contentArray);
+            const tours = await ToursValidators.validateArray(contentArray);
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data!");
