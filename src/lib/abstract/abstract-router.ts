@@ -1,10 +1,12 @@
-import { Application } from 'express';
-
-export abstract class AbstractRouter {
+export abstract class AbstractRouter<T> {
     abstract configureRoutes(): void;
 
-    constructor(public readonly app: Application, private _displayName: string) {
+    constructor(private _app: T, private _displayName: string) {
         this.configureRoutes();
+    }
+
+    get app() {
+        return this._app;
     }
 
     get displayName() {

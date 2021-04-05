@@ -7,7 +7,7 @@ import { UsersRouter } from './users';
 
 class App {
     private _handler: express.Application;
-    private _routes: Array<AbstractRouter> = [];
+    private _routes: Array<AbstractRouter<express.Application>> = [];
 
     constructor() {
         this._handler = express();
@@ -44,7 +44,7 @@ class App {
     }
 
     private configureRoutes() {
-        this._routes = [new UsersRouter(this._handler), new ToursRouter(this._handler)];
+        this._routes = [new ToursRouter(this._handler)];
 
         this._handler.get('/', (req, res) => {
             res.status(200).send('Server up and running!');

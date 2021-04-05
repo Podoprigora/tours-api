@@ -22,6 +22,7 @@ export const tourSchema = yup.object({
     price: yup.number().required(),
     description: yup.string().required()
 });
+
 export type ITour = yup.Asserts<typeof tourSchema>;
 
 export const tourRequestBodySchema = yup.object({

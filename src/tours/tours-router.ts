@@ -1,10 +1,11 @@
-import { Application } from 'express';
+import express from 'express';
 
 import { AbstractRouter } from '../lib/abstract';
 import { ToursController } from './tours-controller';
+import { ToursMiddlewares } from './tours-middlewares';
 
-export class ToursRouter extends AbstractRouter {
-    constructor(app: Application) {
+export class ToursRouter extends AbstractRouter<express.Application> {
+    constructor(app: express.Application) {
         super(app, 'ToursRouter');
     }
 
@@ -12,13 +13,16 @@ export class ToursRouter extends AbstractRouter {
         const toursRoute = this.app.route('/api/v1/tours');
 
         toursRoute.get(ToursController.getAll);
-        toursRoute.post(ToursController.validateRequestBody, ToursController.post);
+        toursRoute.post(ToursMiddlewares.validateRequiredRequestBodyFields, ToursController.create);
 
         const toursByIdRoute = this.app.route('/api/v1/tours/:id/:test?');
 
-        toursByIdRoute.all(ToursController.validateRequestByIdParams);
+        toursByIdRoute.all(ToursMiddlewares.validateRequestByIdParams);
         toursByIdRoute.get(ToursController.getById);
-        toursByIdRoute.patch(ToursController.patch);
+        toursByIdRoute.patch(
+            ToursMiddlewares.validateRequiredRequestBodyFields,
+            ToursController.update
+        );
         toursByIdRoute.delete(ToursController.delete);
     }
 }

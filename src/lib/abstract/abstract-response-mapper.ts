@@ -1,12 +1,8 @@
-import { Response } from 'express';
-
 import { ResponseError } from '../response-error';
 
 export type ResponseMapperData = Record<string, unknown> | null;
 
-export abstract class AbstactResponseMapper<T> {
-    constructor(protected res: Response<T>) {}
-
+export abstract class AbstactResponseMapper {
     abstract sendSuccess(data: ResponseMapperData): void;
 
     abstract sendFailure(data: ResponseMapperData): void;

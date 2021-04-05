@@ -1,22 +1,18 @@
-import { NextFunction, Request, Response } from 'express';
-import fs from 'fs/promises';
-import path from 'path';
+import express from 'express';
 import debug from 'debug';
 
-import { JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
+import { JsendResponseMapper, ResponseError } from '../lib';
 import { ToursValidators } from './tours-validators';
+import { ToursFileData } from './tours-file-data';
 
 const dlog = debug('app:ToursController');
 
 export class ToursController {
-    static async getAll(req: Request, res: Response) {
+    static async getAll(req: express.Request, res: express.Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
-            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const content = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(content);
-            const tours = await ToursValidators.validateArray(contentArray);
+            const tours = await ToursFileData.getAll();
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data!");
@@ -28,26 +24,11 @@ export class ToursController {
         }
     }
 
-    static async validateRequestBody(req: Request, res: Response, next: NextFunction) {
+    static async create(req: express.Request, res: express.Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
-            await ToursValidators.validateRequestBody(req.body);
-            next();
-        } catch (e) {
-            responseMapper.sendFailure(e);
-        }
-    }
-
-    static async post(req: Request, res: Response) {
-        const responseMapper = new JsendResponseMapper(res);
-
-        try {
-            // Get last id
-            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const toursContent = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(toursContent);
-            const tours = await ToursValidators.validateArray(contentArray);
+            const tours = await ToursFileData.getAll();
 
             if (!tours) {
                 throw new ResponseError(500, "Can't perform saving data!");
@@ -57,13 +38,12 @@ export class ToursController {
                 return Math.max(result, item.id);
             }, 0);
 
-            // Save a new tour
             const newTour = await ToursValidators.validateOne({
                 id: lastId + 1,
                 ...req.body
             });
 
-            await fs.writeFile(pathname, JsonHelpers.stringify([...tours, newTour]));
+            await ToursFileData.changeAll([...tours, newTour]);
 
             responseMapper.sendSuccess(newTour);
         } catch (err) {
@@ -71,26 +51,12 @@ export class ToursController {
         }
     }
 
-    static async validateRequestByIdParams(req: Request, res: Response, next: NextFunction) {
-        const responseMapper = new JsendResponseMapper(res);
-
-        try {
-            await ToursValidators.validateRequestByIdParams(req.params);
-            next();
-        } catch {
-            responseMapper.sendError('Invalid params', 400);
-        }
-    }
-
-    static async getById(req: Request, res: Response) {
+    static async getById(req: express.Request, res: express.Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
             const routeParams = req.params;
-            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const content = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(content);
-            const tours = await ToursValidators.validateArray(contentArray);
+            const tours = await ToursFileData.getAll();
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data!");
@@ -110,15 +76,12 @@ export class ToursController {
         }
     }
 
-    static async patch(req: Request, res: Response) {
+    static async update(req: express.Request, res: express.Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
             const routeParams = req.params;
-            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const json = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(json);
-            const tours = await ToursValidators.validateArray(contentArray);
+            const tours = await ToursFileData.getAll();
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data");
@@ -141,7 +104,7 @@ export class ToursController {
                 return String(tour.id) !== routeParams.id;
             });
 
-            await fs.writeFile(pathname, JsonHelpers.stringify([...newTours, newTour]));
+            await ToursFileData.changeAll([...newTours, newTour]);
 
             responseMapper.sendSuccess(newTour);
         } catch (e) {
@@ -149,15 +112,12 @@ export class ToursController {
         }
     }
 
-    static async delete(req: Request, res: Response) {
+    static async delete(req: express.Request, res: express.Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
             const routeParams = req.params;
-            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const json = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(json);
-            const tours = await ToursValidators.validateArray(contentArray);
+            const tours = await ToursFileData.getAll();
 
             if (!tours) {
                 throw new ResponseError(500, "Can't get data");
@@ -175,7 +135,7 @@ export class ToursController {
                 return String(tour.id) !== routeParams.id;
             });
 
-            await fs.writeFile(pathname, JsonHelpers.stringify(newTours));
+            await ToursFileData.changeAll(newTours);
 
             responseMapper.sendSuccess({ id: routeParams.id });
         } catch (e) {

@@ -2,7 +2,7 @@ import express from 'express';
 
 import { AbstractRouter } from '../lib/abstract';
 
-export class UsersRouter extends AbstractRouter {
+export class UsersRouter extends AbstractRouter<express.Application> {
     constructor(app: express.Application) {
         super(app, 'UsersRouter');
     }

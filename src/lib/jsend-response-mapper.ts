@@ -1,6 +1,11 @@
 import { AbstactResponseMapper } from './abstract/abstract-response-mapper';
 import { ResponseError } from './response-error';
 
+interface ResponseHandler<T> {
+    status(code: number): this;
+    json(obj: T): this;
+}
+
 type JsendResponseData =
     | (Record<string, unknown> & {
           items?: unknown[];
@@ -26,7 +31,15 @@ interface JsendErrorResponse {
 
 export type JsendResponse = JsendSuccessResponse | JsendFailureResponse | JsendErrorResponse;
 
-export class JsendResponseMapper extends AbstactResponseMapper<JsendResponse> {
+export class JsendResponseMapper extends AbstactResponseMapper {
+    constructor(private _res: ResponseHandler<JsendResponse>) {
+        super();
+    }
+
+    get res() {
+        return this._res;
+    }
+
     sendSuccess(data: JsendResponseData): void {
         this.res.status(200).json({
             status: 'success',
