@@ -1,9 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import debug from 'debug';
 
 import { JsendResponseMapper, JsonHelpers, ResponseError } from '../lib';
 import { ToursValidators } from './tours-validators';
+
+const dlog = debug('app:ToursController');
 
 export class ToursController {
     static async getAll(req: Request, res: Response) {
@@ -65,6 +68,45 @@ export class ToursController {
             responseMapper.sendSuccess(newTour);
         } catch (err) {
             responseMapper.sendError(err);
+        }
+    }
+
+    static async patch(req: Request, res: Response) {
+        const responseMapper = new JsendResponseMapper(res);
+
+        try {
+            const routeParams = req.params;
+            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
+            const json = await fs.readFile(pathname, { encoding: 'utf-8' });
+            const contentArray = JsonHelpers.parseArray(json);
+            const tours = await ToursValidators.validateArray(contentArray);
+
+            if (!tours) {
+                throw new ResponseError(500, "Can't get data");
+            }
+
+            const foundedTour = tours.find((tour) => {
+                return String(tour.id) === routeParams.id;
+            });
+
+            if (!foundedTour) {
+                throw new ResponseError(404, 'Tour not found!');
+            }
+
+            const newTour = await ToursValidators.validateOne({
+                ...foundedTour,
+                ...req.body
+            });
+
+            const newTours = tours.filter((tour) => {
+                return String(tour.id) !== routeParams.id;
+            });
+
+            await fs.writeFile(pathname, JsonHelpers.stringify([...newTours, newTour]));
+
+            responseMapper.sendSuccess(newTour);
+        } catch (e) {
+            responseMapper.sendError(e);
         }
     }
 
