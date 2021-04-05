@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { JsendResponseMapper } from '../lib';
+import { JsendResponseMapper, ResponseError } from '../lib';
 import { ToursValidators } from './tours-validators';
 
 export class ToursMiddlewares {

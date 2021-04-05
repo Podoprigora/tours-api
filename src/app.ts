@@ -28,7 +28,7 @@ class App {
     private configureMiddlewares() {
         this._handler.use(express.json());
 
-        // Should always be placed last
+        // Handle  errors
         this._handler.use(commonErrorHandlingMiddleware);
     }
 
