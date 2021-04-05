@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
+import { commonErrorHandlingMiddleware } from './common/middlewares/common-error-handling-middleware';
+import { ResponseError } from './lib';
 
-import { JsendResponseMapper } from './lib';
 import { AbstractRouter } from './lib/abstract';
 import { ToursRouter } from './tours';
 import { UsersRouter } from './users';
@@ -24,23 +25,11 @@ class App {
         return this._routes;
     }
 
-    private errorHandler() {
-        return (error: any, req: Request, res: Response, next: NextFunction) => {
-            if (error) {
-                const responseMapper = new JsendResponseMapper(res);
-
-                responseMapper.sendError(error, 404);
-            } else {
-                next();
-            }
-        };
-    }
-
     private configureMiddlewares() {
         this._handler.use(express.json());
 
         // Should always be placed last
-        this._handler.use(this.errorHandler());
+        this._handler.use(commonErrorHandlingMiddleware);
     }
 
     private configureRoutes() {
