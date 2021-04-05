@@ -71,6 +71,45 @@ export class ToursController {
         }
     }
 
+    static async validateRequestByIdParams(req: Request, res: Response, next: NextFunction) {
+        const responseMapper = new JsendResponseMapper(res);
+
+        try {
+            await ToursValidators.validateRequestByIdParams(req.params);
+            next();
+        } catch {
+            responseMapper.sendError('Invalid params', 400);
+        }
+    }
+
+    static async getById(req: Request, res: Response) {
+        const responseMapper = new JsendResponseMapper(res);
+
+        try {
+            const routeParams = req.params;
+            const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
+            const content = await fs.readFile(pathname, { encoding: 'utf-8' });
+            const contentArray = JsonHelpers.parseArray(content);
+            const tours = await ToursValidators.validateArray(contentArray);
+
+            if (!tours) {
+                throw new ResponseError(500, "Can't get data!");
+            }
+
+            const foundedTour = tours.find((item) => {
+                return String(item.id) === routeParams.id;
+            });
+
+            if (!foundedTour) {
+                throw new ResponseError(404, 'Tour not found!');
+            }
+
+            responseMapper.sendSuccess(foundedTour);
+        } catch (e) {
+            responseMapper.sendError(e);
+        }
+    }
+
     static async patch(req: Request, res: Response) {
         const responseMapper = new JsendResponseMapper(res);
 
@@ -110,40 +149,35 @@ export class ToursController {
         }
     }
 
-    static async validateRequestByIdParams(req: Request, res: Response, next: NextFunction) {
-        const responseMapper = new JsendResponseMapper(res);
-
-        try {
-            await ToursValidators.validateRequestByIdParams(req.params);
-            next();
-        } catch {
-            responseMapper.sendError('Invalid params', 400);
-        }
-    }
-
-    static async getById(req: Request, res: Response) {
+    static async delete(req: Request, res: Response) {
         const responseMapper = new JsendResponseMapper(res);
 
         try {
             const routeParams = req.params;
             const pathname = path.resolve(__dirname, '../dev-data/data/tours-simple.json');
-            const content = await fs.readFile(pathname, { encoding: 'utf-8' });
-            const contentArray = JsonHelpers.parseArray(content);
+            const json = await fs.readFile(pathname, { encoding: 'utf-8' });
+            const contentArray = JsonHelpers.parseArray(json);
             const tours = await ToursValidators.validateArray(contentArray);
 
             if (!tours) {
-                throw new ResponseError(500, "Can't get data!");
+                throw new ResponseError(500, "Can't get data");
             }
 
-            const foundedTour = tours.find((item) => {
-                return String(item.id) === routeParams.id;
+            const foundedTour = tours.find((tour) => {
+                return String(tour.id) === routeParams.id;
             });
 
             if (!foundedTour) {
                 throw new ResponseError(404, 'Tour not found!');
             }
 
-            responseMapper.sendSuccess(foundedTour);
+            const newTours = tours.filter((tour) => {
+                return String(tour.id) !== routeParams.id;
+            });
+
+            await fs.writeFile(pathname, JsonHelpers.stringify(newTours));
+
+            responseMapper.sendSuccess({ id: routeParams.id });
         } catch (e) {
             responseMapper.sendError(e);
         }

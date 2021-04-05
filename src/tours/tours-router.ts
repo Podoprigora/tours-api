@@ -19,5 +19,6 @@ export class ToursRouter extends AbstractRouter {
         toursByIdRoute.all(ToursController.validateRequestByIdParams);
         toursByIdRoute.get(ToursController.getById);
         toursByIdRoute.patch(ToursController.patch);
+        toursByIdRoute.delete(ToursController.delete);
     }
 }
