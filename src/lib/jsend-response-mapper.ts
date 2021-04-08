@@ -1,5 +1,5 @@
 import { AbstactResponseMapper } from './abstract/abstract-response-mapper';
-import { ResponseError } from './response-error';
+import { ResponseError } from './errors';
 
 interface ResponseHandler<T> {
     status(code: number): this;
@@ -21,6 +21,7 @@ interface JsendSuccessResponse {
 interface JsendFailureResponse {
     status: 'failure';
     data: JsendResponseData;
+    message?: string;
 }
 
 interface JsendErrorResponse {
@@ -47,10 +48,11 @@ export class JsendResponseMapper extends AbstactResponseMapper {
         });
     }
 
-    sendFailure(data: JsendResponseData) {
+    sendFailure(data: JsendResponseData, message?: string) {
         this.res.status(400).json({
             status: 'failure',
-            data
+            data,
+            message
         });
     }
 

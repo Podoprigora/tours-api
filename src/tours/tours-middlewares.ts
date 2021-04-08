@@ -1,6 +1,7 @@
 import express from 'express';
 
-import { JsendResponseMapper, ResponseError } from '../lib';
+import { JsendResponseMapper } from '../lib';
+import { InvalidParamsError, InvalidFieldError } from '../lib/errors';
 import { ToursValidators } from './tours-validators';
 
 export class ToursMiddlewares {
@@ -9,13 +10,11 @@ export class ToursMiddlewares {
         res: express.Response,
         next: express.NextFunction
     ) {
-        const responseMapper = new JsendResponseMapper(res);
-
         try {
             await ToursValidators.validateRequestByIdParams(req.params);
             next();
         } catch {
-            responseMapper.sendError('Invalid params', 400);
+            next(new InvalidParamsError());
         }
     }
 
@@ -30,7 +29,7 @@ export class ToursMiddlewares {
             await ToursValidators.validateRequestBody(req.body);
             next();
         } catch (e) {
-            responseMapper.sendFailure(e);
+            responseMapper.sendFailure(e instanceof InvalidFieldError ? e.toObject() : e);
         }
     }
 }

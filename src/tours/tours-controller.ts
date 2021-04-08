@@ -1,7 +1,8 @@
 import express from 'express';
 import debug from 'debug';
 
-import { JsendResponseMapper, ResponseError } from '../lib';
+import { JsendResponseMapper } from '../lib';
+import { ResponseError } from '../lib/errors';
 import { ToursValidators } from './tours-validators';
 import { ToursFileData } from './tours-file-data';
 

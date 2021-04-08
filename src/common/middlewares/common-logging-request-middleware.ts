@@ -1,7 +1,6 @@
 import express from 'express';
 import chalk from 'chalk';
 import debug from 'debug';
-import { ResponseError } from '../../lib';
 
 export function commonLoggingRequestMiddleware(debugName: string) {
     const dlog = debug(debugName);

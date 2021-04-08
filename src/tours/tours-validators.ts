@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { InvalidFieldError } from '../lib/errors';
 
 import { tourRequestBodySchema, tourRequestByIdParamsSchema, tourSchema } from '../models';
 
@@ -21,7 +22,7 @@ export class ToursValidators {
 
     static async validateRequestBody(params: unknown) {
         return tourRequestBodySchema.validate(params).catch((e: yup.ValidationError) => {
-            throw { field: e.path, errors: e.errors };
+            throw new InvalidFieldError(e.path, e.errors);
         });
     }
 }

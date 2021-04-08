@@ -1,9 +1,12 @@
 import express from 'express';
+import debug from 'debug';
 
 import { AbstractRouter } from '../lib/abstract';
 import { ToursController } from './tours-controller';
 import { ToursMiddlewares } from './tours-middlewares';
 import { commonLoggingRequestMiddleware } from '../common/middlewares';
+
+const dlog = debug('app:ToursRouter');
 
 export class ToursRouter extends AbstractRouter<express.Application> {
     constructor(app: express.Application) {
@@ -16,7 +19,7 @@ export class ToursRouter extends AbstractRouter<express.Application> {
         toursRoute.get(ToursController.getAll);
         toursRoute.post(ToursMiddlewares.validateRequiredRequestBodyFields, ToursController.create);
 
-        const toursByIdRoute = this.app.route('/api/v1/tours/:id/:test?');
+        const toursByIdRoute = this.app.route('/api/v1/tours/:id');
 
         toursByIdRoute.all(
             commonLoggingRequestMiddleware('app:ToursRoters'),

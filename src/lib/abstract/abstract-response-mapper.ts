@@ -1,4 +1,4 @@
-import { ResponseError } from '../response-error';
+import { ResponseError } from '../errors';
 
 export type ResponseMapperData = Record<string, unknown> | null;
 

@@ -1,10 +1,11 @@
-import express, { NextFunction, Request, Response } from 'express';
-import { commonErrorHandlingMiddleware } from './common/middlewares/common-error-handling-middleware';
-import { ResponseError } from './lib';
+import express from 'express';
+import {
+    commonErrorHandlingMiddleware,
+    commonValidateBodyParamsMiddleware
+} from './common/middlewares';
 
 import { AbstractRouter } from './lib/abstract';
 import { ToursRouter } from './tours';
-import { UsersRouter } from './users';
 
 class App {
     private _handler: express.Application;
@@ -15,6 +16,7 @@ class App {
 
         this.configureMiddlewares();
         this.configureRoutes();
+        this.handleErrors();
     }
 
     get handler() {
@@ -26,10 +28,7 @@ class App {
     }
 
     private configureMiddlewares() {
-        this._handler.use(express.json());
-
-        // Handle  errors
-        this._handler.use(commonErrorHandlingMiddleware);
+        this._handler.use(express.json(), commonValidateBodyParamsMiddleware);
     }
 
     private configureRoutes() {
@@ -38,6 +37,10 @@ class App {
         this._handler.get('/', (req, res) => {
             res.status(200).send('Server up and running!');
         });
+    }
+
+    private handleErrors() {
+        this._handler.use(commonErrorHandlingMiddleware);
     }
 }
 
