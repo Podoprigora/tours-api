@@ -1,7 +1,9 @@
 import express from 'express';
 
 import { AbstractRouter } from './lib/abstract';
+import { ResourceNotFoundError } from './lib/errors';
 import { errorHandlingMiddleware, validateBodyParamsMiddleware } from './lib/middlewares';
+import { JsendResponseDecorator } from './lib/response-decorators';
 import { ToursRouter } from './tours';
 
 class App {
@@ -29,10 +31,21 @@ class App {
     }
 
     private configureRoutes() {
+        // Custom routes
         this._routes = [new ToursRouter(this._handler)];
 
+        // Root route
         this._handler.get('/', (req, res) => {
-            res.status(200).send('Server up and running!');
+            const jsend = new JsendResponseDecorator(res);
+
+            jsend.sendSuccess(null);
+        });
+
+        // Not found route
+        this._handler.use((req, res, next) => {
+            const jsend = new JsendResponseDecorator(res);
+
+            jsend.sendError(new ResourceNotFoundError());
         });
     }
 
