@@ -31,7 +31,7 @@ export class ToursMiddlewares {
         } catch (e) {
             const error = e instanceof InvalidFieldError ? e.toObject() : e;
 
-            jsend.sendFailure(error, e?.message);
+            return jsend.sendFailure(error, e?.message);
         }
     }
 }

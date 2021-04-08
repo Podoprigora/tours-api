@@ -28,7 +28,7 @@
     "main": "",
     "scripts": {
         "ts-watch": "rimraf ./build && npm run copyfiles && tsc -w",
-        "copyfiles": "copyfiles -f ./src/dev-data/data/*.* ./build/dev-data/data",
+        "copyfiles": "copyfiles -f ./src/dev-data/data/*.* ./build/dev-data/data && copyfiles -u 1 ./src/public/** ./build",
         "nodemon": "set DEBUG=app* && nodemon ./build/server.js"
     },
     "nodemonConfig": {

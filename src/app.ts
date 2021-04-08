@@ -1,10 +1,14 @@
+import path from 'path';
 import express from 'express';
+import debug from 'debug';
 
 import { AbstractRouter } from './lib/abstract';
 import { ResourceNotFoundError } from './lib/errors';
 import { errorHandlingMiddleware, validateBodyParamsMiddleware } from './lib/middlewares';
 import { JsendResponseDecorator } from './lib/response-decorators';
 import { ToursRouter } from './tours';
+
+const dlog = debug('app:App');
 
 class App {
     private _handler: express.Application;
@@ -27,7 +31,16 @@ class App {
     }
 
     private configureMiddlewares() {
+        // Parse and validate json body
         this._handler.use(express.json(), validateBodyParamsMiddleware);
+
+        // Static content
+        this._handler.use(
+            express.static(path.resolve(__dirname, './public'), {
+                index: 'overview.html',
+                maxAge: '1 day'
+            })
+        );
     }
 
     private configureRoutes() {
