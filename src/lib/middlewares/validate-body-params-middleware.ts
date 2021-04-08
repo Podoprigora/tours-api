@@ -1,8 +1,8 @@
 import express from 'express';
 
-import { InvalidBodyError } from '../../lib/errors';
+import { InvalidBodyError } from '../errors';
 
-export function commonValidateBodyParamsMiddleware(
+export function validateBodyParamsMiddleware(
     err: any,
     req: express.Request,
     res: express.Response,

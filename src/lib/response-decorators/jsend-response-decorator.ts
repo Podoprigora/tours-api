@@ -1,5 +1,5 @@
-import { AbstactResponseMapper, ResponseHandler } from './abstract/abstract-response-mapper';
-import { ResponseError } from './errors';
+import { ResponseError } from '../errors';
+import { AbstactResponseDecorator } from '../abstract';
 
 type JsendResponseData =
     | (Record<string, unknown> & {
@@ -27,15 +27,7 @@ interface JsendErrorResponse {
 
 export type JsendResponse = JsendSuccessResponse | JsendFailureResponse | JsendErrorResponse;
 
-export class JsendResponseMapper extends AbstactResponseMapper {
-    constructor(private _res: ResponseHandler<JsendResponse>) {
-        super();
-    }
-
-    get res() {
-        return this._res;
-    }
-
+export class JsendResponseDecorator extends AbstactResponseDecorator<JsendResponse> {
     sendSuccess(data: JsendResponseData): void {
         this.res.status(200).json({
             status: 'success',

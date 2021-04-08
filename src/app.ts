@@ -1,10 +1,7 @@
 import express from 'express';
-import {
-    commonErrorHandlingMiddleware,
-    commonValidateBodyParamsMiddleware
-} from './common/middlewares';
 
 import { AbstractRouter } from './lib/abstract';
+import { errorHandlingMiddleware, validateBodyParamsMiddleware } from './lib/middlewares';
 import { ToursRouter } from './tours';
 
 class App {
@@ -28,7 +25,7 @@ class App {
     }
 
     private configureMiddlewares() {
-        this._handler.use(express.json(), commonValidateBodyParamsMiddleware);
+        this._handler.use(express.json(), validateBodyParamsMiddleware);
     }
 
     private configureRoutes() {
@@ -40,7 +37,7 @@ class App {
     }
 
     private handleErrors() {
-        this._handler.use(commonErrorHandlingMiddleware);
+        this._handler.use(errorHandlingMiddleware);
     }
 }
 

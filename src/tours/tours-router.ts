@@ -2,9 +2,9 @@ import express from 'express';
 import debug from 'debug';
 
 import { AbstractRouter } from '../lib/abstract';
+import { loggingRequestMiddleware } from '../lib/middlewares';
 import { ToursController } from './tours-controller';
 import { ToursMiddlewares } from './tours-middlewares';
-import { commonLoggingRequestMiddleware } from '../common/middlewares';
 
 const dlog = debug('app:ToursRouter');
 
@@ -22,7 +22,7 @@ export class ToursRouter extends AbstractRouter<express.Application> {
         const toursByIdRoute = this.app.route('/api/v1/tours/:id');
 
         toursByIdRoute.all(
-            commonLoggingRequestMiddleware('app:ToursRoters'),
+            loggingRequestMiddleware('app:ToursRoters'),
             ToursMiddlewares.validateRequestByIdParams
         );
         toursByIdRoute.get(ToursController.getById);

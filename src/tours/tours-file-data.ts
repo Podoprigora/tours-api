@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { JsonHelpers } from '../lib';
 
+import { JsonHelpers } from '../lib/helpers';
 import { ITour } from '../models';
 import { ToursValidators } from './tours-validators';
 

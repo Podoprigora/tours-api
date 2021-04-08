@@ -6,8 +6,7 @@ export class InvalidFieldError extends Error {
     toObject() {
         return {
             field: this.field,
-            errors: this.errors,
-            message: this.message
+            errors: this.errors
         };
     }
 }

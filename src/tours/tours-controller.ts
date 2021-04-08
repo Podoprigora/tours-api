@@ -1,16 +1,16 @@
-import express from 'express';
+import express, { response } from 'express';
 import debug from 'debug';
 
 import { ResponseError } from '../lib/errors';
 import { ToursValidators } from './tours-validators';
 import { ToursFileData } from './tours-file-data';
-import { ResponseMapper } from '../lib/response-mapper';
+import { JsendResponseDecorator } from '../lib/response-decorators';
 
 const dlog = debug('app:ToursController');
 
 export class ToursController {
     static async getAll(req: express.Request, res: express.Response) {
-        const responseMapper = ResponseMapper.getInstance(res);
+        const jsend = new JsendResponseDecorator(res);
 
         try {
             const tours = await ToursFileData.getAll();
@@ -19,14 +19,14 @@ export class ToursController {
                 throw new ResponseError(500, "Can't get data!");
             }
 
-            responseMapper.sendSuccess({ count: tours.length, items: tours });
+            jsend.sendSuccess({ count: tours.length, items: tours });
         } catch (err) {
-            responseMapper.sendError(err);
+            jsend.sendError(err);
         }
     }
 
     static async create(req: express.Request, res: express.Response) {
-        const responseMapper = ResponseMapper.getInstance(res);
+        const jsend = new JsendResponseDecorator(res);
 
         try {
             const tours = await ToursFileData.getAll();
@@ -46,14 +46,14 @@ export class ToursController {
 
             await ToursFileData.changeAll([...tours, newTour]);
 
-            responseMapper.sendSuccess(newTour);
+            jsend.sendSuccess(newTour);
         } catch (err) {
-            responseMapper.sendError(err);
+            jsend.sendError(err);
         }
     }
 
     static async getById(req: express.Request, res: express.Response) {
-        const responseMapper = ResponseMapper.getInstance(res);
+        const jsend = new JsendResponseDecorator(res);
 
         try {
             const routeParams = req.params;
@@ -71,14 +71,14 @@ export class ToursController {
                 throw new ResponseError(404, 'Tour not found!');
             }
 
-            responseMapper.sendSuccess(foundedTour);
+            jsend.sendSuccess(foundedTour);
         } catch (e) {
-            responseMapper.sendError(e);
+            jsend.sendError(e);
         }
     }
 
     static async update(req: express.Request, res: express.Response) {
-        const responseMapper = ResponseMapper.getInstance(res);
+        const jsend = new JsendResponseDecorator(res);
 
         try {
             const routeParams = req.params;
@@ -107,14 +107,14 @@ export class ToursController {
 
             await ToursFileData.changeAll([...newTours, newTour]);
 
-            responseMapper.sendSuccess(newTour);
+            jsend.sendSuccess(newTour);
         } catch (e) {
-            responseMapper.sendError(e);
+            jsend.sendError(e);
         }
     }
 
     static async delete(req: express.Request, res: express.Response) {
-        const responseMapper = ResponseMapper.getInstance(res);
+        const jsend = new JsendResponseDecorator(res);
 
         try {
             const routeParams = req.params;
@@ -138,9 +138,9 @@ export class ToursController {
 
             await ToursFileData.changeAll(newTours);
 
-            responseMapper.sendSuccess({ id: routeParams.id });
+            jsend.sendSuccess({ id: routeParams.id });
         } catch (e) {
-            responseMapper.sendError(e);
+            jsend.sendError(e);
         }
     }
 }

@@ -2,7 +2,7 @@ import express from 'express';
 import chalk from 'chalk';
 import debug from 'debug';
 
-export function commonLoggingRequestMiddleware(debugName: string) {
+export function loggingRequestMiddleware(debugName: string) {
     const dlog = debug(debugName);
 
     return (req: express.Request, res: express.Response, next: express.NextFunction) => {
