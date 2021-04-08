@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { JsendResponseMapper } from '../../lib';
+import { ResponseMapper } from '../../lib/response-mapper';
 
 export function commonErrorHandlingMiddleware(
     error: any,
@@ -9,7 +9,7 @@ export function commonErrorHandlingMiddleware(
     next: express.NextFunction
 ) {
     if (error) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         responseMapper.sendError(error, 500);
     } else {

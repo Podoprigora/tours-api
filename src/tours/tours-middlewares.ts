@@ -2,6 +2,7 @@ import express from 'express';
 
 import { JsendResponseMapper } from '../lib';
 import { InvalidParamsError, InvalidFieldError } from '../lib/errors';
+import { ResponseMapper } from '../lib/response-mapper';
 import { ToursValidators } from './tours-validators';
 
 export class ToursMiddlewares {
@@ -23,7 +24,7 @@ export class ToursMiddlewares {
         res: express.Response,
         next: express.NextFunction
     ) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             await ToursValidators.validateRequestBody(req.body);

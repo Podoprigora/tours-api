@@ -1,16 +1,16 @@
 import express from 'express';
 import debug from 'debug';
 
-import { JsendResponseMapper } from '../lib';
 import { ResponseError } from '../lib/errors';
 import { ToursValidators } from './tours-validators';
 import { ToursFileData } from './tours-file-data';
+import { ResponseMapper } from '../lib/response-mapper';
 
 const dlog = debug('app:ToursController');
 
 export class ToursController {
     static async getAll(req: express.Request, res: express.Response) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             const tours = await ToursFileData.getAll();
@@ -26,7 +26,7 @@ export class ToursController {
     }
 
     static async create(req: express.Request, res: express.Response) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             const tours = await ToursFileData.getAll();
@@ -53,7 +53,7 @@ export class ToursController {
     }
 
     static async getById(req: express.Request, res: express.Response) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             const routeParams = req.params;
@@ -78,7 +78,7 @@ export class ToursController {
     }
 
     static async update(req: express.Request, res: express.Response) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             const routeParams = req.params;
@@ -114,7 +114,7 @@ export class ToursController {
     }
 
     static async delete(req: express.Request, res: express.Response) {
-        const responseMapper = new JsendResponseMapper(res);
+        const responseMapper = ResponseMapper.getInstance(res);
 
         try {
             const routeParams = req.params;

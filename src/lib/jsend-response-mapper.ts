@@ -1,10 +1,5 @@
-import { AbstactResponseMapper } from './abstract/abstract-response-mapper';
+import { AbstactResponseMapper, ResponseHandler } from './abstract/abstract-response-mapper';
 import { ResponseError } from './errors';
-
-interface ResponseHandler<T> {
-    status(code: number): this;
-    json(obj: T): this;
-}
 
 type JsendResponseData =
     | (Record<string, unknown> & {
