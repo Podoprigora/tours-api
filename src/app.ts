@@ -32,7 +32,7 @@ class App {
     }
 
     private configureMiddlewares() {
-        // Parse and validate json body
+        // Parse and validate request body in json
         this._handler.use(express.json(), validateBodyParamsMiddleware);
 
         // Static content
