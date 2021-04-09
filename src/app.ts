@@ -2,6 +2,7 @@ import path from 'path';
 import express from 'express';
 import debug from 'debug';
 
+import { config } from './config';
 import { AbstractRouter } from './lib/abstract';
 import { ResourceNotFoundError } from './lib/errors';
 import { errorHandlingMiddleware, validateBodyParamsMiddleware } from './lib/middlewares';
@@ -35,12 +36,8 @@ class App {
         this._handler.use(express.json(), validateBodyParamsMiddleware);
 
         // Static content
-        this._handler.use(
-            express.static(path.resolve(__dirname, './public'), {
-                index: 'overview.html',
-                maxAge: '1 day'
-            })
-        );
+        const publicPathname = path.resolve(__dirname, config.staticBasePath);
+        this._handler.use(express.static(publicPathname, config.staticOptions));
     }
 
     private configureRoutes() {
